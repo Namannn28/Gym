@@ -9,7 +9,7 @@ async function main() {
   console.log('Starting seed process...');
   const results: any[] = [];
 
-  const csvFilePath = path.join(__dirname, '../../../../megaGymDataset.csv');
+  const csvFilePath = 'C:\\Users\\HP\\Desktop\\gym\\megaGymDataset.csv';
   
   if (!fs.existsSync(csvFilePath)) {
     console.error(`CSV file not found at ${csvFilePath}`);
