@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { fetchApi } from '@/lib/api';
+import { Input } from '@/components/ui/input';
 
 type Message = { id: string | number; text: string; isUser: boolean };
 
@@ -128,13 +129,13 @@ export default function AICoach() {
           </div>
 
           <div className="p-4 bg-zinc-950 border-t border-zinc-800 flex gap-4">
-            <input 
+            <Input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask me anything about your workout or diet..." 
-              className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+              className="flex-1 h-12"
             />
             <button 
               onClick={handleSend}
