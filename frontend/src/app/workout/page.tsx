@@ -1,18 +1,86 @@
 "use client";
 
-import { useState } from 'react';
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Save, Trash2, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { fetchApi } from '@/lib/api';
+
+type Exercise = { id: string; name: string };
+
+type SetInput = {
+  id: number;
+  exerciseId: string;
+  weight: string;
+  reps: string;
+};
 
 export default function WorkoutLogger() {
-  const [sets, setSets] = useState([{ id: 1, exercise: '', weight: '', reps: '' }]);
+  const [sets, setSets] = useState<SetInput[]>([{ id: 1, exerciseId: '', weight: '', reps: '' }]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    async function loadExercises() {
+      try {
+        setLoading(true);
+        const res = await fetchApi('/exercises?limit=100'); // Load top 100 exercises for dropdown
+        setExercises(res.data || []);
+      } catch (err) {
+        console.error("Failed to load exercises", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadExercises();
+  }, []);
 
   const addSet = () => {
-    setSets([...sets, { id: sets.length + 1, exercise: '', weight: '', reps: '' }]);
+    setSets([...sets, { id: Date.now(), exerciseId: '', weight: '', reps: '' }]);
   };
 
   const removeSet = (id: number) => {
     setSets(sets.filter(s => s.id !== id));
+  };
+
+  const updateSet = (id: number, field: keyof SetInput, value: string) => {
+    setSets(sets.map(s => s.id === id ? { ...s, [field]: value } : s));
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      // Filter out empty sets
+      const validSets = sets.filter(s => s.exerciseId && s.weight && s.reps).map(s => ({
+        exerciseId: s.exerciseId,
+        weight: parseFloat(s.weight),
+        reps: parseInt(s.reps, 10),
+        sets: 1, // we treat each row as 1 set
+        restTime: 0
+      }));
+
+      if (validSets.length === 0) {
+        alert("Please fill out at least one valid set.");
+        return;
+      }
+
+      await fetchApi('/workouts', {
+        method: 'POST',
+        body: JSON.stringify({
+          date: new Date().toISOString(),
+          notes: 'Logged from web UI',
+          sets: validSets
+        })
+      });
+
+      alert("Workout saved successfully!");
+      setSets([{ id: Date.now(), exerciseId: '', weight: '', reps: '' }]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save workout");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -23,8 +91,12 @@ export default function WorkoutLogger() {
             <h1 className="text-4xl font-bold text-electric-blue">Log Workout</h1>
             <p className="text-zinc-400 mt-2">Record your sets, reps, and weight.</p>
           </div>
-          <button className="flex items-center gap-2 px-6 py-2 bg-blue-500 text-black font-bold rounded-lg hover:bg-blue-600 transition-colors">
-            <Save size={18} />
+          <button 
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-500 text-black font-bold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
             Save
           </button>
         </header>
@@ -38,21 +110,28 @@ export default function WorkoutLogger() {
           </div>
 
           <div className="space-y-4">
-            {sets.map((set, index) => (
+            {sets.map((set) => (
               <div key={set.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-zinc-950 p-4 md:p-2 rounded-lg border border-zinc-800 md:border-transparent">
                 <div className="col-span-5">
                   <label className="block text-xs text-zinc-500 mb-1 md:hidden">Exercise</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Bench Press" 
+                  <select 
+                    value={set.exerciseId}
+                    onChange={(e) => updateSet(set.id, 'exerciseId', e.target.value)}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:border-blue-500 focus:outline-none"
-                  />
+                  >
+                    <option value="">Select Exercise...</option>
+                    {exercises.map(ex => (
+                      <option key={ex.id} value={ex.id}>{ex.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="col-span-3">
                   <label className="block text-xs text-zinc-500 mb-1 md:hidden">Weight (kg)</label>
                   <input 
                     type="number" 
-                    placeholder="0" 
+                    placeholder="0"
+                    value={set.weight}
+                    onChange={(e) => updateSet(set.id, 'weight', e.target.value)}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
@@ -60,7 +139,9 @@ export default function WorkoutLogger() {
                   <label className="block text-xs text-zinc-500 mb-1 md:hidden">Reps</label>
                   <input 
                     type="number" 
-                    placeholder="0" 
+                    placeholder="0"
+                    value={set.reps}
+                    onChange={(e) => updateSet(set.id, 'reps', e.target.value)}
                     className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
