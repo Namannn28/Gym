@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { fetchApi } from '@/lib/api';
 
-type Message = { id: number; text: string; isUser: boolean };
+type Message = { id: string | number; text: string; isUser: boolean };
 
 export default function AICoach() {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Hello! I'm your AI Fitness Coach. What are your fitness goals today?", isUser: false },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -21,22 +22,62 @@ export default function AICoach() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const res = await fetchApi('/ai/history');
+        if (res && res.length > 0) {
+          const formatted = res.map((msg: any) => ({
+            id: msg.id,
+            text: msg.message,
+            isUser: msg.isUser
+          }));
+          setMessages(formatted);
+        } else {
+          setMessages([
+            { id: 1, text: "Hello! I'm your AI Fitness Coach. What are your fitness goals today?", isUser: false },
+          ]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetching(false);
+      }
+    }
+    fetchHistory();
+  }, []);
+
+  const handleSend = async () => {
+    if (!input.trim() || loading) return;
 
     const userMsg: Message = { id: Date.now(), text: input, isUser: true };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
+    setLoading(true);
 
-    // Simulate AI typing delay
-    setTimeout(() => {
+    try {
+      const res = await fetchApi('/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message: userMsg.text })
+      });
+      
       const aiMsg: Message = { 
         id: Date.now() + 1, 
-        text: "I can help with that! Let's set up a plan that works for you. Remember to stay consistent and hydrate.", 
+        text: res.response || "Sorry, I didn't get that.", 
         isUser: false 
       };
       setMessages(prev => [...prev, aiMsg]);
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      const errMsg: Message = { 
+        id: Date.now() + 1, 
+        text: "Sorry, I am having trouble connecting to my brain right now.", 
+        isUser: false 
+      };
+      setMessages(prev => [...prev, errMsg]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,18 +92,38 @@ export default function AICoach() {
 
         <div className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {messages.map(msg => (
-              <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                <div className={`flex max-w-[80%] gap-3 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.isUser ? 'bg-blue-600' : 'bg-zinc-700'}`}>
-                    {msg.isUser ? <User size={18} /> : <Bot size={18} />}
+            {fetching ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="animate-spin text-electric-blue" size={32} />
+              </div>
+            ) : (
+              messages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`flex max-w-[80%] gap-3 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.isUser ? 'bg-blue-600' : 'bg-zinc-700'}`}>
+                      {msg.isUser ? <User size={18} /> : <Bot size={18} />}
+                    </div>
+                    <div className={`px-4 py-3 rounded-2xl ${msg.isUser ? 'bg-blue-600 rounded-tr-sm' : 'bg-zinc-800 rounded-tl-sm'}`}>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                    </div>
                   </div>
-                  <div className={`px-4 py-3 rounded-2xl ${msg.isUser ? 'bg-blue-600 rounded-tr-sm' : 'bg-zinc-800 rounded-tl-sm'}`}>
-                    <p className="text-sm leading-relaxed">{msg.text}</p>
+                </div>
+              ))
+            )}
+            {loading && (
+              <div className="flex justify-start">
+                <div className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-zinc-700">
+                    <Bot size={18} />
+                  </div>
+                  <div className="px-4 py-3 rounded-2xl bg-zinc-800 rounded-tl-sm flex items-center gap-2">
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce delay-200"></div>
                   </div>
                 </div>
               </div>
-            ))}
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -77,7 +138,8 @@ export default function AICoach() {
             />
             <button 
               onClick={handleSend}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg flex items-center justify-center transition-colors"
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white p-3 rounded-lg flex items-center justify-center transition-colors"
             >
               <Send size={20} />
             </button>
