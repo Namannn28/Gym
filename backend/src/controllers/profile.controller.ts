@@ -20,7 +20,7 @@ export const createOrUpdateProfile = async (req: AuthRequest, res: Response): Pr
 
     const parsed = profileSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { age, gender, height, currentWeight, desiredWeight, activityLevel, photoUrl } = parsed.data;
 

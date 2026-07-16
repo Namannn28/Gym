@@ -15,7 +15,7 @@ export const getExercises = async (req: Request, res: Response): Promise<any> =>
   try {
     const parsed = querySchema.safeParse(req.query);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { category, muscleGroup, difficulty, search, page = '1', limit = '20' } = parsed.data;
 

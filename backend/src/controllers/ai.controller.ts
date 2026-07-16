@@ -17,7 +17,7 @@ export const chatWithCoach = async (req: AuthRequest, res: Response): Promise<an
 
     const parsed = chatSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { message } = parsed.data;
 

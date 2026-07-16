@@ -17,7 +17,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
   try {
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { username, email, phoneNumber, password } = parsed.data;
 
@@ -74,7 +74,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
   try {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { identifier, password } = parsed.data; // identifier can be email or username
 

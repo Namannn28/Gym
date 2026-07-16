@@ -22,7 +22,7 @@ export const logWorkout = async (req: AuthRequest, res: Response): Promise<any> 
 
     const parsed = logWorkoutSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
 
     const { date, notes, sets } = parsed.data;

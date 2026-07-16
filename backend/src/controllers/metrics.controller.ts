@@ -30,7 +30,7 @@ export const logCardio = async (req: AuthRequest, res: Response): Promise<any> =
 
     const parsed = cardioSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { type, duration, speed, incline, calories, date } = parsed.data;
 
@@ -78,7 +78,7 @@ export const logWater = async (req: AuthRequest, res: Response): Promise<any> =>
 
     const parsed = waterSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { amount, date } = parsed.data;
 
@@ -122,7 +122,7 @@ export const logWeight = async (req: AuthRequest, res: Response): Promise<any> =
 
     const parsed = weightSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.issues });
     }
     const { weight, date } = parsed.data;
 
