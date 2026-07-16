@@ -6,6 +6,8 @@ import Sidebar from '@/components/Sidebar';
 
 import AuthProvider from '@/components/AuthProvider';
 
+import MobileNav from '@/components/MobileNav';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,9 +25,10 @@ export default function RootLayout({
       <body className={`${inter.className} bg-black text-white flex min-h-screen`} suppressHydrationWarning>
         <AuthProvider>
           <Sidebar />
+          <MobileNav />
           
           {/* Main Content */}
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto md:ml-0 mt-0">
             {children}
           </main>
         </AuthProvider>
