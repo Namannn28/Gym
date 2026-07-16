@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, Plus, Droplet, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { fetchApi } from '@/lib/api';
+import { Input } from '@/components/ui/input';
 
 export default function FoodWaterLogger() {
   const [water, setWater] = useState(0);
@@ -58,10 +59,10 @@ export default function FoodWaterLogger() {
               <h2 className="text-2xl font-bold mb-4">Log Food</h2>
               <div className="relative mb-6">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                <input 
+                <Input 
                   type="text" 
                   placeholder="Search USDA database..." 
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="pl-10 h-12"
                 />
               </div>
               
