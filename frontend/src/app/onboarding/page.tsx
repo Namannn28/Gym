@@ -1,3 +1,6 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
 export default function OnboardingPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-black text-white">
@@ -6,15 +9,15 @@ export default function OnboardingPage() {
         <form className="space-y-4 grid grid-cols-2 gap-4">
           <div className="col-span-2">
             <label className="block text-sm font-medium">Profile Photo URL</label>
-            <input type="text" className="w-full p-2 mt-1 bg-zinc-800 rounded" />
+            <Input type="text" className="mt-1" />
           </div>
           <div>
             <label className="block text-sm font-medium">Age</label>
-            <input type="number" className="w-full p-2 mt-1 bg-zinc-800 rounded" />
+            <Input type="number" className="mt-1" />
           </div>
           <div>
             <label className="block text-sm font-medium">Gender</label>
-            <select className="w-full p-2 mt-1 bg-zinc-800 rounded">
+            <select className="w-full h-10 px-3 py-2 mt-1 bg-zinc-800 border border-zinc-700 rounded-md focus:border-blue-500 focus:outline-none transition-colors text-sm">
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
@@ -22,11 +25,11 @@ export default function OnboardingPage() {
           </div>
           <div>
             <label className="block text-sm font-medium">Height (cm)</label>
-            <input type="number" className="w-full p-2 mt-1 bg-zinc-800 rounded" />
+            <Input type="number" className="mt-1" />
           </div>
           <div>
             <label className="block text-sm font-medium">Activity Level</label>
-            <select className="w-full p-2 mt-1 bg-zinc-800 rounded">
+            <select className="w-full h-10 px-3 py-2 mt-1 bg-zinc-800 border border-zinc-700 rounded-md focus:border-blue-500 focus:outline-none transition-colors text-sm">
               <option>Sedentary</option>
               <option>Lightly Active</option>
               <option>Moderately Active</option>
@@ -35,15 +38,15 @@ export default function OnboardingPage() {
           </div>
           <div>
             <label className="block text-sm font-medium">Current Weight (kg)</label>
-            <input type="number" className="w-full p-2 mt-1 bg-zinc-800 rounded" />
+            <Input type="number" className="mt-1" />
           </div>
           <div>
             <label className="block text-sm font-medium">Desired Weight (kg)</label>
-            <input type="number" className="w-full p-2 mt-1 bg-zinc-800 rounded" />
+            <Input type="number" className="mt-1" />
           </div>
-          <button className="col-span-2 w-full py-2 font-bold text-black bg-blue-500 rounded hover:bg-blue-600 mt-4">
+          <Button className="col-span-2 mt-4 font-bold">
             Complete Profile
-          </button>
+          </Button>
         </form>
       </div>
     </div>
