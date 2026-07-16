@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { fetchApi } from '@/lib/api';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -78,13 +79,13 @@ export default function SignupPage() {
               className="mt-1"
             />
           </div>
-          <button 
+          <Button 
             type="submit"
             disabled={loading}
-            className="w-full py-2 font-bold text-black bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50 transition-colors"
+            className="w-full py-2 font-bold"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
+          </Button>
         </form>
 
         <p className="text-center text-sm text-zinc-400">
