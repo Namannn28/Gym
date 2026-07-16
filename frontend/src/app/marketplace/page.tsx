@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, Check, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { fetchApi } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 type Product = {
   id: number;
@@ -68,11 +70,11 @@ export default function Marketplace() {
             {products.map(product => {
               const inCart = cart.includes(product.id);
               return (
-                <div key={product.id} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-blue-500 transition-all flex flex-col">
+                <Card key={product.id} className="overflow-hidden hover:border-blue-500 transition-all flex flex-col">
                   <div className="h-48 bg-zinc-800 flex items-center justify-center">
                     <span className="text-zinc-600 font-bold">Image Placeholder</span>
                   </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between">
+                  <CardContent className="p-5 flex-1 flex flex-col justify-between">
                     <div>
                       <p className="text-xs text-blue-500 font-bold tracking-wider uppercase mb-1">{product.category}</p>
                       <h3 className="text-lg font-bold mb-2">{product.name}</h3>
@@ -83,19 +85,18 @@ export default function Marketplace() {
                     </div>
                     <div className="flex items-center justify-between mt-auto">
                       <span className="text-xl font-extrabold">${product.price.toFixed(2)}</span>
-                      <button 
+                      <Button 
                         onClick={() => addToCart(product.id)}
                         disabled={inCart}
-                        className={`px-4 py-2 font-bold rounded-lg transition-colors flex items-center gap-2 ${
-                          inCart ? 'bg-green-600 text-white cursor-default' : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
+                        variant={inCart ? "secondary" : "default"}
+                        className={`font-bold flex items-center gap-2 ${inCart ? 'bg-green-600 text-white hover:bg-green-700' : ''}`}
                       >
                         {inCart ? <Check size={18} /> : 'Add'}
                         {inCart && 'Added'}
-                      </button>
+                      </Button>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
