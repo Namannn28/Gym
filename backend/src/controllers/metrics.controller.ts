@@ -1,6 +1,26 @@
 import { Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { z } from 'zod';
+
+const cardioSchema = z.object({
+  type: z.string().min(1),
+  duration: z.number().int().min(1),
+  speed: z.number().optional(),
+  incline: z.number().optional(),
+  calories: z.number().optional(),
+  date: z.string().optional(),
+});
+
+const waterSchema = z.object({
+  amount: z.number().int().min(1),
+  date: z.string().optional(),
+});
+
+const weightSchema = z.object({
+  weight: z.number().min(1),
+  date: z.string().optional(),
+});
 
 // Cardio
 export const logCardio = async (req: AuthRequest, res: Response): Promise<any> => {
@@ -8,7 +28,11 @@ export const logCardio = async (req: AuthRequest, res: Response): Promise<any> =
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { type, duration, speed, incline, calories, date } = req.body;
+    const parsed = cardioSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { type, duration, speed, incline, calories, date } = parsed.data;
 
     const cardioLog = await prisma.cardioLog.create({
       data: {
@@ -52,7 +76,11 @@ export const logWater = async (req: AuthRequest, res: Response): Promise<any> =>
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { amount, date } = req.body;
+    const parsed = waterSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { amount, date } = parsed.data;
 
     const waterLog = await prisma.waterLog.create({
       data: {
@@ -92,7 +120,11 @@ export const logWeight = async (req: AuthRequest, res: Response): Promise<any> =
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { weight, date } = req.body;
+    const parsed = weightSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { weight, date } = parsed.data;
 
     const weightLog = await prisma.weightLog.create({
       data: {
