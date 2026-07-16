@@ -2,15 +2,24 @@ import { Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { z } from 'zod';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'dummy_key');
+
+const chatSchema = z.object({
+  message: z.string().min(1),
+});
 
 export const chatWithCoach = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { message } = req.body;
+    const parsed = chatSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { message } = parsed.data;
 
     // Save user message
     await prisma.aIChat.create({
