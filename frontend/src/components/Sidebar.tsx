@@ -22,6 +22,7 @@ export default function Sidebar() {
       <Link href="/food" className="text-zinc-400 hover:text-white transition-colors">Nutrition & Water</Link>
       <Link href="/ai-coach" className="text-zinc-400 hover:text-white transition-colors">AI Coach</Link>
       <Link href="/marketplace" className="text-zinc-400 hover:text-white transition-colors">Marketplace</Link>
+      <Link href="/settings" className="text-zinc-400 hover:text-white transition-colors">Settings</Link>
       
       <div className="mt-auto">
         {isAuthenticated ? (
