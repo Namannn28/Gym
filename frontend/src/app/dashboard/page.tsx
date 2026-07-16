@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuthStore } from '@/store/authStore';
+import { fetchApi } from '@/lib/api';
 
 const weightData = [
   { date: 'Mon', weight: 80 },
@@ -24,19 +27,37 @@ const caloriesData = [
 ];
 
 export default function Dashboard() {
+  const { user } = useAuthStore();
+  const [water, setWater] = useState(0);
+
+  useEffect(() => {
+    async function fetchWater() {
+      try {
+        const res = await fetchApi('/metrics/water');
+        const today = new Date().setHours(0, 0, 0, 0);
+        const todaysLogs = (res || []).filter((log: any) => new Date(log.date).setHours(0, 0, 0, 0) === today);
+        const totalWater = todaysLogs.reduce((acc: number, log: any) => acc + log.amount, 0);
+        setWater(totalWater);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchWater();
+  }, []);
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-black text-white p-6 md:p-12">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-electric-blue">Dashboard</h1>
-          <p className="text-zinc-400 mt-2">Welcome back! Here's your weekly progress.</p>
+          <p className="text-zinc-400 mt-2">Welcome back, {user?.name || 'Athlete'}! Here's your weekly progress.</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="p-6 bg-zinc-900 rounded-xl border border-zinc-800">
             <h3 className="text-zinc-400 text-sm font-medium">Current Weight</h3>
-            <p className="text-3xl font-bold mt-2">78.5 kg</p>
-            <span className="text-green-500 text-sm">-1.5 kg this week</span>
+            <p className="text-3xl font-bold mt-2">{user?.currentWeight || '--'} kg</p>
+            <span className="text-green-500 text-sm">Active</span>
           </div>
           <div className="p-6 bg-zinc-900 rounded-xl border border-zinc-800">
             <h3 className="text-zinc-400 text-sm font-medium">Daily Streak</h3>
@@ -44,7 +65,7 @@ export default function Dashboard() {
           </div>
           <div className="p-6 bg-zinc-900 rounded-xl border border-zinc-800">
             <h3 className="text-zinc-400 text-sm font-medium">Water Intake</h3>
-            <p className="text-3xl font-bold mt-2">2.5 / 3 L</p>
+            <p className="text-3xl font-bold mt-2">{(water / 1000).toFixed(1)} / 3 L</p>
           </div>
         </div>
 
