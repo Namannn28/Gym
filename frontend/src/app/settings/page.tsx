@@ -6,6 +6,8 @@ import { fetchApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Save, Loader2, User as UserIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Settings() {
   const { user, setUser } = useAuthStore();
@@ -90,14 +92,14 @@ export default function Settings() {
             </h1>
             <p className="text-zinc-400 mt-2">Manage your personal information and goals.</p>
           </div>
-          <button 
+          <Button 
             onClick={handleSave}
             disabled={saving || loading}
-            className="flex items-center gap-2 px-6 py-2 bg-blue-500 text-black font-bold rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 font-bold"
           >
             {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
             Save Changes
-          </button>
+          </Button>
         </header>
 
         {loading ? (
@@ -105,86 +107,88 @@ export default function Settings() {
             <Loader2 className="animate-spin text-electric-blue" size={48} />
           </div>
         ) : (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 max-w-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Age</label>
-                <Input 
-                  type="number" 
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  placeholder="e.g. 25"
-                />
-              </div>
+          <Card className="max-w-2xl">
+            <CardContent className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Age</label>
+                  <Input 
+                    type="number" 
+                    name="age"
+                    value={formData.age}
+                    onChange={handleChange}
+                    placeholder="e.g. 25"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Gender</label>
-                <select 
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
-                >
-                  <option value="">Select...</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Gender</label>
+                  <select 
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
+                  >
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Height (cm)</label>
-                <Input 
-                  type="number" 
-                  name="height"
-                  value={formData.height}
-                  onChange={handleChange}
-                  placeholder="e.g. 175"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Height (cm)</label>
+                  <Input 
+                    type="number" 
+                    name="height"
+                    value={formData.height}
+                    onChange={handleChange}
+                    placeholder="e.g. 175"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Current Weight (kg)</label>
-                <Input 
-                  type="number" 
-                  name="currentWeight"
-                  value={formData.currentWeight}
-                  onChange={handleChange}
-                  placeholder="e.g. 75"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Current Weight (kg)</label>
+                  <Input 
+                    type="number" 
+                    name="currentWeight"
+                    value={formData.currentWeight}
+                    onChange={handleChange}
+                    placeholder="e.g. 75"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Desired Weight (kg)</label>
-                <Input 
-                  type="number" 
-                  name="desiredWeight"
-                  value={formData.desiredWeight}
-                  onChange={handleChange}
-                  placeholder="e.g. 70"
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Desired Weight (kg)</label>
+                  <Input 
+                    type="number" 
+                    name="desiredWeight"
+                    value={formData.desiredWeight}
+                    onChange={handleChange}
+                    placeholder="e.g. 70"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Activity Level</label>
-                <select 
-                  name="activityLevel"
-                  value={formData.activityLevel}
-                  onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
-                >
-                  <option value="">Select...</option>
-                  <option value="sedentary">Sedentary</option>
-                  <option value="light">Lightly Active</option>
-                  <option value="moderate">Moderately Active</option>
-                  <option value="very">Very Active</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Activity Level</label>
+                  <select 
+                    name="activityLevel"
+                    value={formData.activityLevel}
+                    onChange={handleChange}
+                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
+                  >
+                    <option value="">Select...</option>
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Lightly Active</option>
+                    <option value="moderate">Moderately Active</option>
+                    <option value="very">Very Active</option>
+                  </select>
+                </div>
 
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
     </ProtectedRoute>
