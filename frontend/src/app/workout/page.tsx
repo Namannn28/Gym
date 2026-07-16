@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Save, Trash2, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { fetchApi } from '@/lib/api';
+import { Input } from '@/components/ui/input';
 
 type Exercise = { id: string; name: string };
 
@@ -127,22 +128,20 @@ export default function WorkoutLogger() {
                 </div>
                 <div className="col-span-3">
                   <label className="block text-xs text-zinc-500 mb-1 md:hidden">Weight (kg)</label>
-                  <input 
+                  <Input 
                     type="number" 
                     placeholder="0"
                     value={set.weight}
                     onChange={(e) => updateSet(set.id, 'weight', e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div className="col-span-3">
                   <label className="block text-xs text-zinc-500 mb-1 md:hidden">Reps</label>
-                  <input 
+                  <Input 
                     type="number" 
                     placeholder="0"
                     value={set.reps}
                     onChange={(e) => updateSet(set.id, 'reps', e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div className="col-span-1 flex justify-end md:justify-center">
