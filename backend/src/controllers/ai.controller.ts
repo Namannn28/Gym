@@ -21,13 +21,30 @@ export const chatWithCoach = async (req: AuthRequest, res: Response): Promise<an
       },
     });
 
+    // Fetch recent history
+    const history = await prisma.aIChat.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+    
+    // Reverse to chronological
+    const recentHistory = history.reverse();
+
+    const formattedHistory = recentHistory.map(msg => 
+      `${msg.isUser ? 'User' : 'Coach'}: ${msg.message}`
+    ).join('\n');
+
     // In a real RAG scenario, we would use pgvector here to query the `Exercise` table
     // For simplicity in this free-tier setup, we pass standard context
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `
       You are an expert fitness coach for a gym management app.
-      The user asks: "${message}"
+      Here is the recent conversation history:
+      ${formattedHistory}
+      
+      The user just said: "${message}"
       Provide a concise, motivating, and actionable fitness/nutrition response.
     `;
 
