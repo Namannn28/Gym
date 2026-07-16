@@ -1,20 +1,36 @@
 "use client";
 
-import { useState } from 'react';
-import { ShoppingCart, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Check, Loader2 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { fetchApi } from '@/lib/api';
 
-const products = [
-  { id: 1, name: 'Whey Protein Isolate', category: 'Supplements', price: 49.99, rating: 4.8 },
-  { id: 2, name: 'Creatine Monohydrate', category: 'Supplements', price: 24.99, rating: 4.9 },
-  { id: 3, name: 'Resistance Bands Set', category: 'Accessories', price: 19.99, rating: 4.5 },
-  { id: 4, name: 'Premium Lifting Belt', category: 'Gear', price: 39.99, rating: 4.7 },
-  { id: 5, name: 'Pre-Workout Energy', category: 'Supplements', price: 34.99, rating: 4.6 },
-  { id: 6, name: 'Gym Duffel Bag', category: 'Accessories', price: 45.00, rating: 4.8 },
-];
+type Product = {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  rating: number;
+};
 
 export default function Marketplace() {
   const [cart, setCart] = useState<number[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetchApi('/products');
+        setProducts(res || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
 
   const addToCart = (id: number) => {
     setCart(prev => [...prev, id]);
@@ -43,41 +59,47 @@ export default function Marketplace() {
           </button>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map(product => {
-            const inCart = cart.includes(product.id);
-            return (
-              <div key={product.id} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-blue-500 transition-all flex flex-col">
-                <div className="h-48 bg-zinc-800 flex items-center justify-center">
-                  <span className="text-zinc-600 font-bold">Image Placeholder</span>
-                </div>
-                <div className="p-5 flex-1 flex flex-col justify-between">
-                  <div>
-                    <p className="text-xs text-blue-500 font-bold tracking-wider uppercase mb-1">{product.category}</p>
-                    <h3 className="text-lg font-bold mb-2">{product.name}</h3>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="text-yellow-500">★</span>
-                      <span className="text-sm text-zinc-400">{product.rating}</span>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="animate-spin text-electric-blue" size={48} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {products.map(product => {
+              const inCart = cart.includes(product.id);
+              return (
+                <div key={product.id} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden hover:border-blue-500 transition-all flex flex-col">
+                  <div className="h-48 bg-zinc-800 flex items-center justify-center">
+                    <span className="text-zinc-600 font-bold">Image Placeholder</span>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs text-blue-500 font-bold tracking-wider uppercase mb-1">{product.category}</p>
+                      <h3 className="text-lg font-bold mb-2">{product.name}</h3>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="text-yellow-500">★</span>
+                        <span className="text-sm text-zinc-400">{product.rating}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xl font-extrabold">${product.price.toFixed(2)}</span>
+                      <button 
+                        onClick={() => addToCart(product.id)}
+                        disabled={inCart}
+                        className={`px-4 py-2 font-bold rounded-lg transition-colors flex items-center gap-2 ${
+                          inCart ? 'bg-green-600 text-white cursor-default' : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        {inCart ? <Check size={18} /> : 'Add'}
+                        {inCart && 'Added'}
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="text-xl font-extrabold">${product.price.toFixed(2)}</span>
-                    <button 
-                      onClick={() => addToCart(product.id)}
-                      disabled={inCart}
-                      className={`px-4 py-2 font-bold rounded-lg transition-colors flex items-center gap-2 ${
-                        inCart ? 'bg-green-600 text-white cursor-default' : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                    >
-                      {inCart ? <Check size={18} /> : 'Add'}
-                      {inCart && 'Added'}
-                    </button>
-                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );
