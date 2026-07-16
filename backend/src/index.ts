@@ -10,6 +10,7 @@ import exerciseRoutes from './routes/exercise.routes';
 import workoutRoutes from './routes/workout.routes';
 import metricsRoutes from './routes/metrics.routes';
 import aiRoutes from './routes/ai.routes';
+import productRoutes from './routes/product.routes';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/exercises', exerciseRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/metrics', metricsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/products', productRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Fitness Platform API is running' });
