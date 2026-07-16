@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { fetchApi } from '@/lib/api';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -49,32 +50,32 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-zinc-300">Name</label>
-            <input 
+            <Input 
               type="text" 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 mt-1 bg-zinc-800 border border-zinc-700 rounded focus:border-blue-500 focus:outline-none transition-colors" 
+              className="mt-1"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-zinc-300">Email</label>
-            <input 
+            <Input 
               type="email" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 mt-1 bg-zinc-800 border border-zinc-700 rounded focus:border-blue-500 focus:outline-none transition-colors" 
+              className="mt-1"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-zinc-300">Password</label>
-            <input 
+            <Input 
               type="password" 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 mt-1 bg-zinc-800 border border-zinc-700 rounded focus:border-blue-500 focus:outline-none transition-colors" 
+              className="mt-1"
             />
           </div>
           <button 
