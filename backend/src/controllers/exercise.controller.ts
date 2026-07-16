@@ -1,9 +1,23 @@
 import { Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
+import { z } from 'zod';
+
+const querySchema = z.object({
+  category: z.string().optional(),
+  muscleGroup: z.string().optional(),
+  difficulty: z.string().optional(),
+  search: z.string().optional(),
+  page: z.string().optional(),
+  limit: z.string().optional(),
+});
 
 export const getExercises = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { category, muscleGroup, difficulty, search, page = '1', limit = '20' } = req.query;
+    const parsed = querySchema.safeParse(req.query);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { category, muscleGroup, difficulty, search, page = '1', limit = '20' } = parsed.data;
 
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
@@ -42,7 +56,7 @@ export const getExerciseById = async (req: Request, res: Response): Promise<any>
   try {
     const { id } = req.params;
     const exercise = await prisma.exercise.findUnique({
-      where: { id },
+      where: { id: id as string },
     });
 
     if (!exercise) return res.status(404).json({ error: 'Exercise not found' });
