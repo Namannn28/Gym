@@ -2,12 +2,24 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
+import { z } from 'zod';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretjwtkey_replace_in_production';
 
+const registerSchema = z.object({
+  username: z.string().min(3).max(50),
+  email: z.string().email(),
+  phoneNumber: z.string().optional(),
+  password: z.string().min(6),
+});
+
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { username, email, phoneNumber, password } = req.body;
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { username, email, phoneNumber, password } = parsed.data;
 
     // Check if user exists
     const existingUser = await prisma.user.findFirst({
@@ -53,9 +65,18 @@ export const register = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+const loginSchema = z.object({
+  identifier: z.string().min(3),
+  password: z.string().min(1),
+});
+
 export const login = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { identifier, password } = req.body; // identifier can be email or username
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Validation failed', details: parsed.error.errors });
+    }
+    const { identifier, password } = parsed.data; // identifier can be email or username
 
     const user = await prisma.user.findFirst({
       where: {
