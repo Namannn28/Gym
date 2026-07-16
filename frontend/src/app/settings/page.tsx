@@ -5,6 +5,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { fetchApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Save, Loader2, User as UserIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function Settings() {
   const { user, setUser } = useAuthStore();
@@ -109,12 +110,11 @@ export default function Settings() {
               
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Age</label>
-                <input 
+                <Input 
                   type="number" 
                   name="age"
                   value={formData.age}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
                   placeholder="e.g. 25"
                 />
               </div>
@@ -125,7 +125,7 @@ export default function Settings() {
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
                 >
                   <option value="">Select...</option>
                   <option value="male">Male</option>
@@ -136,36 +136,33 @@ export default function Settings() {
 
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Height (cm)</label>
-                <input 
+                <Input 
                   type="number" 
                   name="height"
                   value={formData.height}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
                   placeholder="e.g. 175"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Current Weight (kg)</label>
-                <input 
+                <Input 
                   type="number" 
                   name="currentWeight"
                   value={formData.currentWeight}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
                   placeholder="e.g. 75"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Desired Weight (kg)</label>
-                <input 
+                <Input 
                   type="number" 
                   name="desiredWeight"
                   value={formData.desiredWeight}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
                   placeholder="e.g. 70"
                 />
               </div>
@@ -176,7 +173,7 @@ export default function Settings() {
                   name="activityLevel"
                   value={formData.activityLevel}
                   onChange={handleChange}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 focus:outline-none focus:border-blue-500 transition-colors h-10 py-2 text-sm"
                 >
                   <option value="">Select...</option>
                   <option value="sedentary">Sedentary</option>
